@@ -44,7 +44,7 @@
         scene.add(sunLight);
 
         // Earth with high-quality texture of the continents
-        const earthTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/4/47/True_color_world_map.jpg');
+        const earthTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/e/e7/True_color_earth_2.jpg');
         const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
         const earthMaterial = new THREE.MeshStandardMaterial({
             map: earthTexture,  // Map the texture to Earth
@@ -73,6 +73,10 @@
         camera.position.set(0, 10, 25);  // Position camera at a distance to see both Sun and Earth
         camera.lookAt(new THREE.Vector3(0, 0, 0));
 
+        // Time management: We'll stop at the year 2099
+        const startDate = new Date();
+        const endDate = new Date(2099, 0, 1); // January 1, 2099
+
         // Animation function
         function animate() {
             requestAnimationFrame(animate);
@@ -97,7 +101,7 @@
 
             // Restart animation when year 2099 is reached
             if (now >= endDate) {
-                startDate = new Date();
+                startDate.setTime(now.getTime()); // Reset start time to current time
             }
 
             // Render the scene
