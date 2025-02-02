@@ -28,11 +28,6 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
         
-        // Add lighting
-        const light = new THREE.PointLight(0xffffff, 2, 100);
-        light.position.set(0, 0, 0); // Sun as the light source
-        scene.add(light);
-        
         // Create Sun with texture and glow
         const sunTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/5/5f/Sun_texture.jpg');
         const sunGeometry = new THREE.SphereGeometry(3, 64, 64);
@@ -66,6 +61,11 @@
             scene.add(star);
         }
 
+        // Add light source at the Sun's position
+        const light = new THREE.PointLight(0xffffff, 2, 100);
+        light.position.set(0, 0, 0); // Sun as the light source
+        scene.add(light);
+        
         camera.position.set(0, 10, 25);
         
         // Orbit path (dashed line)
