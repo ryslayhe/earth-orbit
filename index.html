@@ -20,44 +20,44 @@
 </head>
 <body>
     <script>
+        // Create a new scene
         const scene = new THREE.Scene();
-        scene.background = new THREE.TextureLoader().load('https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/textures/cube/space.jpg');
+        scene.background = new THREE.Color(0x000000); // Black background to represent space
 
+        // Set up the camera
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Add a Point Light to represent the Sun and make it brighter
-        const light = new THREE.PointLight(0xffffff, 10, 100);
-        light.position.set(0, 0, 0); // Sun as the light source
+        // Add a PointLight (representing the Sun)
+        const light = new THREE.PointLight(0xffffff, 3, 100); // Bright, focused light
+        light.position.set(0, 0, 0); // Position the light at the Sun's center
         scene.add(light);
 
-        // Create Sun with emissive texture (for glow) and higher emissive intensity
+        // Create the Sun (with emissive material to glow)
         const sunTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/5/5f/Sun_texture.jpg');
         const sunGeometry = new THREE.SphereGeometry(3, 64, 64);
         const sunMaterial = new THREE.MeshBasicMaterial({
             map: sunTexture,
-            emissive: 0xffcc00,  // Make it glow
-            emissiveIntensity: 3.0 // Increase the emissive intensity
+            emissive: 0xffcc00,  // Emissive yellow light for glowing
+            emissiveIntensity: 2 // Intensity of the glow
         });
         const sun = new THREE.Mesh(sunGeometry, sunMaterial);
         scene.add(sun);
 
-        // Create Earth with high-quality texture showing continents and oceans
+        // Earth texture (high-quality texture with continents and oceans)
         const earthTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/8/8e/Earth_map.jpg');
         const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
         const earthMaterial = new THREE.MeshStandardMaterial({
             map: earthTexture,
-            roughness: 0.5,
-            metalness: 0.1,
-            emissive: 0x0066cc,  // Slight glow for Earth to make it more realistic
-            emissiveIntensity: 0.1
+            roughness: 0.7,   // Some roughness for realism
+            metalness: 0.2    // Slight metalness for reflection effects
         });
         const earth = new THREE.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
 
-        // Add Earth's atmosphere effect with transparency and glow
+        // Create Earth's atmosphere effect (slightly glowing halo)
         const atmosphereGeometry = new THREE.SphereGeometry(1.05, 64, 64);
         const atmosphereMaterial = new THREE.MeshBasicMaterial({
             color: 0x00aaff,
@@ -67,49 +67,52 @@
         const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
         scene.add(atmosphere);
 
-        // Set camera position and angle for better viewing
-        camera.position.set(0, 10, 25);  // Set the camera a bit farther from the scene
-        camera.lookAt(new THREE.Vector3(0, 0, 0)); // Always look at the Sun
-
-        // Start the current date
-        let startDate = new Date();
+        // Set camera position to get a good view of the scene
+        camera.position.set(0, 10, 25);
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
 
         // Earth's orbit speed multiplier
-        const speedMultiplier = 525600; // Increase Earth's orbital speed by 525,600 times
+        const speedMultiplier = 525600;  // Speed up the orbit by 525,600x
 
-        // Date when we should stop and restart
+        // Date when we should stop and restart (2099)
         const endDate = new Date(2099, 0, 1); // January 1, 2099
 
+        let startDate = new Date(); // Get the current date
+
+        // Animation function
         function animate() {
             requestAnimationFrame(animate);
 
-            // Get the current date and calculate the elapsed time
+            // Get current date and calculate elapsed time
             const now = new Date();
             let elapsed = now - startDate;
+            elapsed *= speedMultiplier;  // Speed up the orbit
 
-            // Apply the speed multiplier for faster orbit (525,600 times faster)
-            elapsed *= speedMultiplier;
-
-            // Calculate the angle of Earth's orbit based on the elapsed time
+            // Calculate angle of Earth's orbit based on elapsed time
             const yearInMs = 365.25 * 24 * 60 * 60 * 1000;
             const angle = (elapsed / yearInMs) * 2 * Math.PI;
 
+            // Orbit radius
             const orbitRadius = 12;
             earth.position.x = orbitRadius * Math.cos(angle);
             earth.position.z = orbitRadius * Math.sin(angle);
 
-            // Rotate Earth on its axis for realism
+            // Rotate Earth on its axis
             earth.rotation.y += 0.01;
+
+            // Match atmosphere with Earth's position
             atmosphere.position.copy(earth.position);
 
-            // Check if we have reached the end date (year 2099)
+            // If the current date exceeds the target end date, reset the start date
             if (now >= endDate) {
-                startDate = new Date();  // Reset to current time
+                startDate = new Date();  // Reset to the current time
             }
 
+            // Render the scene
             renderer.render(scene, camera);
         }
 
+        // Start the animation
         animate();
     </script>
 </body>
