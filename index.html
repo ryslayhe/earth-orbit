@@ -39,7 +39,7 @@
         const sunMaterial = new THREE.MeshBasicMaterial({
             map: sunTexture,
             emissive: 0xffcc00,  // Make it glow
-            emissiveIntensity: 1.5
+            emissiveIntensity: 3.0 // Increase the emissive intensity
         });
         const sun = new THREE.Mesh(sunGeometry, sunMaterial);
         scene.add(sun);
@@ -49,7 +49,7 @@
         const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
         const earthMaterial = new THREE.MeshStandardMaterial({
             map: earthTexture,
-            roughness: 0.4,
+            roughness: 0.5,
             metalness: 0.1,
             emissive: 0x0066cc,  // Slight glow for Earth to make it more realistic
             emissiveIntensity: 0.1
