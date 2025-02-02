@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realistic Earth's Orbit Around the Sun (3D)</title>
+    <title>Realistic Earth Orbiting the Sun</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            background-color: black;
             overflow: hidden;
         }
     </style>
@@ -20,44 +15,48 @@
 </head>
 <body>
     <script>
-        // Create a new scene
+        // Scene setup
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x000000); // Black background to represent space
+        scene.background = new THREE.Color(0x000000); // Black background to simulate space
 
-        // Set up the camera
+        // Camera setup
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Add a PointLight (representing the Sun)
-        const light = new THREE.PointLight(0xffffff, 3, 100); // Bright, focused light
-        light.position.set(0, 0, 0); // Position the light at the Sun's center
+        // Add a directional light for Earth lighting
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(10, 10, 10).normalize();
         scene.add(light);
 
-        // Create the Sun (with emissive material to glow)
+        // Add an ambient light (soft overall lighting)
+        const ambientLight = new THREE.AmbientLight(0x404040, 1);
+        scene.add(ambientLight);
+
+        // Sun (glowing sphere)
         const sunTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/5/5f/Sun_texture.jpg');
         const sunGeometry = new THREE.SphereGeometry(3, 64, 64);
         const sunMaterial = new THREE.MeshBasicMaterial({
             map: sunTexture,
-            emissive: 0xffcc00,  // Emissive yellow light for glowing
-            emissiveIntensity: 2 // Intensity of the glow
+            emissive: 0xffff00,  // Bright yellow glow
+            emissiveIntensity: 3 // Increase the intensity of the glow
         });
         const sun = new THREE.Mesh(sunGeometry, sunMaterial);
         scene.add(sun);
 
-        // Earth texture (high-quality texture with continents and oceans)
+        // Earth (high-quality texture with continents and oceans)
         const earthTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/8/8e/Earth_map.jpg');
         const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
         const earthMaterial = new THREE.MeshStandardMaterial({
             map: earthTexture,
-            roughness: 0.7,   // Some roughness for realism
-            metalness: 0.2    // Slight metalness for reflection effects
+            roughness: 0.5,   // Slightly rough for realism
+            metalness: 0.2    // Slightly metallic for some reflective effects
         });
         const earth = new THREE.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
 
-        // Create Earth's atmosphere effect (slightly glowing halo)
+        // Earth's atmosphere (glowing halo effect)
         const atmosphereGeometry = new THREE.SphereGeometry(1.05, 64, 64);
         const atmosphereMaterial = new THREE.MeshBasicMaterial({
             color: 0x00aaff,
@@ -67,33 +66,34 @@
         const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
         scene.add(atmosphere);
 
-        // Set camera position to get a good view of the scene
+        // Orbit radius
+        const orbitRadius = 12;
+        let angle = 0;
+
+        // Camera position
         camera.position.set(0, 10, 25);
         camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-        // Earth's orbit speed multiplier
-        const speedMultiplier = 525600;  // Speed up the orbit by 525,600x
+        // Earth's speed multiplier for faster orbit
+        const speedMultiplier = 525600;
 
-        // Date when we should stop and restart (2099)
-        const endDate = new Date(2099, 0, 1); // January 1, 2099
+        // Date when we stop and restart (January 1, 2099)
+        const endDate = new Date(2099, 0, 1);
+        let startDate = new Date();
 
-        let startDate = new Date(); // Get the current date
-
-        // Animation function
+        // Animation loop
         function animate() {
             requestAnimationFrame(animate);
 
-            // Get current date and calculate elapsed time
+            // Get the current time and calculate the elapsed time
             const now = new Date();
             let elapsed = now - startDate;
-            elapsed *= speedMultiplier;  // Speed up the orbit
+            elapsed *= speedMultiplier;
 
-            // Calculate angle of Earth's orbit based on elapsed time
-            const yearInMs = 365.25 * 24 * 60 * 60 * 1000;
-            const angle = (elapsed / yearInMs) * 2 * Math.PI;
+            // Calculate the orbit's angle based on elapsed time
+            angle = (elapsed / (365.25 * 24 * 60 * 60 * 1000)) * (2 * Math.PI); // Earth's orbit around the Sun in years
 
-            // Orbit radius
-            const orbitRadius = 12;
+            // Update Earth's position in orbit
             earth.position.x = orbitRadius * Math.cos(angle);
             earth.position.z = orbitRadius * Math.sin(angle);
 
@@ -103,16 +103,15 @@
             // Match atmosphere with Earth's position
             atmosphere.position.copy(earth.position);
 
-            // If the current date exceeds the target end date, reset the start date
+            // If the target date is reached, reset the start date
             if (now >= endDate) {
-                startDate = new Date();  // Reset to the current time
+                startDate = new Date();
             }
 
-            // Render the scene
+            // Render the scene from the camera's perspective
             renderer.render(scene, camera);
         }
 
-        // Start the animation
         animate();
     </script>
 </body>
