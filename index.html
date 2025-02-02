@@ -33,13 +33,13 @@
         light.position.set(0, 0, 0); // Sun as the light source
         scene.add(light);
 
-        // Add a glowing Sun with texture and emissive material
+        // Add a glowing Sun with realistic texture and emissive material
         const sunTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/5/5f/Sun_texture.jpg');
         const sunGeometry = new THREE.SphereGeometry(3, 64, 64);
         const sunMaterial = new THREE.MeshBasicMaterial({
             map: sunTexture,
             emissive: 0xffcc00,  // Make it glow
-            emissiveIntensity: 0.8
+            emissiveIntensity: 1.5
         });
         const sun = new THREE.Mesh(sunGeometry, sunMaterial);
         scene.add(sun);
@@ -55,7 +55,7 @@
         const earth = new THREE.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
 
-        // Add Earth's atmosphere with a transparent glow
+        // Add Earth's atmosphere with a transparent glow effect
         const atmosphereGeometry = new THREE.SphereGeometry(1.05, 64, 64);
         const atmosphereMaterial = new THREE.MeshBasicMaterial({
             color: 0x00aaff, 
@@ -68,23 +68,42 @@
         // Camera settings for a good view of the orbit
         camera.position.set(0, 10, 25);  // Set the camera at a fixed distance from the center
         camera.lookAt(new THREE.Vector3(0, 0, 0)); // Always look at the Sun
+
+        // Start the current date
+        let startDate = new Date();
+
+        // Earth's orbit speed multiplier
+        const speedMultiplier = 525600; // Increase Earth's orbital speed by 525,600 times
+
+        // Date when we should stop and restart
+        const endDate = new Date(2099, 0, 1); // January 1, 2099
         
         function animate() {
             requestAnimationFrame(animate);
             
+            // Get the current date and calculate the elapsed time
             const now = new Date();
+            let elapsed = now - startDate;
+
+            // Apply the speed multiplier for faster orbit (525,600 times faster)
+            elapsed *= speedMultiplier;
+
+            // Calculate the angle of Earth's orbit based on the elapsed time
             const yearInMs = 365.25 * 24 * 60 * 60 * 1000;
-            const startOfYear = new Date(now.getFullYear(), 0, 0);
-            const elapsed = now - startOfYear;
             const angle = (elapsed / yearInMs) * 2 * Math.PI;
             
             const orbitRadius = 12;
             earth.position.x = orbitRadius * Math.cos(angle);
             earth.position.z = orbitRadius * Math.sin(angle);
             
-            // Rotate Earth on its axis
+            // Rotate Earth on its axis for realism
             earth.rotation.y += 0.01;
             atmosphere.position.copy(earth.position);
+            
+            // Check if we have reached the end date (year 2099)
+            if (now >= endDate) {
+                startDate = new Date();  // Reset to current time
+            }
             
             renderer.render(scene, camera);
         }
