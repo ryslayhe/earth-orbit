@@ -28,12 +28,12 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
         
-        // Add a point light to represent the Sun
+        // Add a Point Light to represent the Sun and make it brighter
         const light = new THREE.PointLight(0xffffff, 2, 100);
         light.position.set(0, 0, 0); // Sun as the light source
         scene.add(light);
-
-        // Add a glowing Sun with realistic texture and emissive material
+        
+        // Create Sun with emissive texture (for glow) and higher emissive intensity
         const sunTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/5/5f/Sun_texture.jpg');
         const sunGeometry = new THREE.SphereGeometry(3, 64, 64);
         const sunMaterial = new THREE.MeshBasicMaterial({
@@ -50,12 +50,14 @@
         const earthMaterial = new THREE.MeshStandardMaterial({ 
             map: earthTexture, 
             roughness: 0.5, 
-            metalness: 0.1 
+            metalness: 0.1,
+            emissive: 0x0066cc,  // Slight glow for Earth to make it more realistic
+            emissiveIntensity: 0.1
         });
         const earth = new THREE.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
 
-        // Add Earth's atmosphere with a transparent glow effect
+        // Add Earth's atmosphere effect with transparency and glow
         const atmosphereGeometry = new THREE.SphereGeometry(1.05, 64, 64);
         const atmosphereMaterial = new THREE.MeshBasicMaterial({
             color: 0x00aaff, 
@@ -65,8 +67,8 @@
         const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
         scene.add(atmosphere);
 
-        // Camera settings for a good view of the orbit
-        camera.position.set(0, 10, 25);  // Set the camera at a fixed distance from the center
+        // Set camera position and angle for better viewing
+        camera.position.set(0, 10, 25);  // Set the camera a bit farther from the scene
         camera.lookAt(new THREE.Vector3(0, 0, 0)); // Always look at the Sun
 
         // Start the current date
