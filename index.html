@@ -14,42 +14,39 @@
 </head>
 <body>
     <script>
-        // Create scene and camera
+        // Scene setup
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x000000); // Black background
-
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Ambient Light to simulate global lighting
-        const ambientLight = new THREE.AmbientLight(0x404040, 1);  // Soft, non-directional light
+        // Add ambient light
+        const ambientLight = new THREE.AmbientLight(0x404040, 1);
         scene.add(ambientLight);
 
-        // Sun (emissive and glowing)
+        // Sun setup
         const sunGeometry = new THREE.SphereGeometry(3, 64, 64);
         const sunMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffff00,         // Sun's color: Yellow
-            emissive: 0xffff00,      // Make it glow
-            emissiveIntensity: 2,    // Intensity of glow
-            flatShading: true
+            color: 0xffff00,
+            emissive: 0xffff00,
+            emissiveIntensity: 2
         });
         const sun = new THREE.Mesh(sunGeometry, sunMaterial);
         scene.add(sun);
 
-        // Add Point Light to simulate Sun's light
+        // Add point light to simulate Sun's light
         const sunLight = new THREE.PointLight(0xffffff, 2, 50);
-        sunLight.position.set(0, 0, 0); // Set at Sun's position
+        sunLight.position.set(0, 0, 0);
         scene.add(sunLight);
 
-        // Earth with high-quality texture of the continents
+        // Earth setup
         const earthTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/e/e7/True_color_earth_2.jpg');
         const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
         const earthMaterial = new THREE.MeshStandardMaterial({
-            map: earthTexture,  // Map the texture to Earth
-            roughness: 0.5,      // Slight roughness for realism
-            metalness: 0.2       // Slight metallic reflection
+            map: earthTexture,
+            roughness: 0.5,
+            metalness: 0.2
         });
         const earth = new THREE.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
@@ -65,17 +62,17 @@
         scene.add(atmosphere);
 
         // Orbit settings for Earth
-        const orbitRadius = 12; // Orbit radius
+        const orbitRadius = 12;
         let angle = 0;
         const speedMultiplier = 525600;
 
         // Camera setup
-        camera.position.set(0, 10, 25);  // Position camera at a distance to see both Sun and Earth
+        camera.position.set(0, 10, 25);
         camera.lookAt(new THREE.Vector3(0, 0, 0));
 
         // Time management: We'll stop at the year 2099
         const startDate = new Date();
-        const endDate = new Date(2099, 0, 1); // January 1, 2099
+        const endDate = new Date(2099, 0, 1);
 
         // Animation function
         function animate() {
@@ -87,7 +84,7 @@
             elapsed *= speedMultiplier;
 
             // Calculate Earth's angle in its orbit around the Sun
-            angle = (elapsed / (365.25 * 24 * 60 * 60 * 1000)) * (2 * Math.PI);  // Full circle in one year
+            angle = (elapsed / (365.25 * 24 * 60 * 60 * 1000)) * (2 * Math.PI);
 
             // Update Earth's position based on orbit angle
             earth.position.x = orbitRadius * Math.cos(angle);
@@ -101,7 +98,7 @@
 
             // Restart animation when year 2099 is reached
             if (now >= endDate) {
-                startDate.setTime(now.getTime()); // Reset start time to current time
+                startDate.setTime(now.getTime());
             }
 
             // Render the scene
