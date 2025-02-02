@@ -40,8 +40,8 @@
         sunLight.position.set(0, 0, 0);
         scene.add(sunLight);
 
-        // Earth setup with a new reliable Earth texture
-        const earthTextureURL = 'https://upload.wikimedia.org/wikipedia/commons/8/83/Earthmap1000x500.jpg'; // Updated Earth texture
+        // Earth setup with a reliable Earth texture
+        const earthTextureURL = 'https://upload.wikimedia.org/wikipedia/commons/9/97/Planet_Earth_map_2000.jpg'; // Updated Earth texture
         const earthTexture = new THREE.TextureLoader().load(earthTextureURL, function() {
             console.log('Earth texture loaded successfully!');
         });
