@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth's Position Around the Sun</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+        }
+        canvas {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="orbitCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("orbitCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const sunX = canvas.width / 2;
+        const sunY = canvas.height / 2;
+        const orbitRadius = Math.min(canvas.width, canvas.height) * 0.4;
+        const yearInMs = 365.25 * 24 * 60 * 60 * 1000;
+
+        function getEarthPosition() {
+            const now = new Date();
+            const startOfYear = new Date(now.getFullYear(), 0, 0);
+            const elapsed = now - startOfYear;
+            const angle = (elapsed / yearInMs) * 2 * Math.PI;
+            return {
+                x: sunX + orbitRadius * Math.cos(angle),
+                y: sunY + orbitRadius * Math.sin(angle)
+            };
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "yellow";
+            ctx.beginPath();
+            ctx.arc(sunX, sunY, 30, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = "white";
+            ctx.beginPath();
+            ctx.arc(sunX, sunY, orbitRadius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            const earthPos = getEarthPosition();
+            ctx.fillStyle = "blue";
+            ctx.beginPath();
+            ctx.arc(earthPos.x, earthPos.y, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
