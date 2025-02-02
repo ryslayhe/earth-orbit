@@ -40,8 +40,14 @@
         sunLight.position.set(0, 0, 0);
         scene.add(sunLight);
 
-        // Earth setup
-        const earthTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/e/e7/True_color_earth_2.jpg');
+        // Earth setup with a known, reliable Earth texture
+        const earthTextureURL = 'https://upload.wikimedia.org/wikipedia/commons/8/83/Earthmap1000x500.jpg';
+        const earthTexture = new THREE.TextureLoader().load(earthTextureURL, function() {
+            console.log('Earth texture loaded successfully!');
+        }, undefined, function(error) {
+            console.error('Error loading Earth texture: ', error);
+        });
+
         const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
         const earthMaterial = new THREE.MeshStandardMaterial({
             map: earthTexture,
