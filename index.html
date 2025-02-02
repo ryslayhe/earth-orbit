@@ -21,7 +21,7 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Add ambient light
+        // Lighting
         const ambientLight = new THREE.AmbientLight(0x404040, 1);
         scene.add(ambientLight);
 
@@ -35,37 +35,36 @@
         const sun = new THREE.Mesh(sunGeometry, sunMaterial);
         scene.add(sun);
 
-        // Add point light to simulate Sun's light
         const sunLight = new THREE.PointLight(0xffffff, 2, 50);
         sunLight.position.set(0, 0, 0);
         scene.add(sunLight);
 
-        // Earth setup with a reliable Earth texture
-        const earthTextureURL = 'https://upload.wikimedia.org/wikipedia/commons/9/97/Planet_Earth_map_2000.jpg'; // Updated Earth texture
-        const earthTexture = new THREE.TextureLoader().load(earthTextureURL, function() {
-            console.log('Earth texture loaded successfully!');
-        });
+        // Texture Loader
+        const textureLoader = new THREE.TextureLoader();
 
+        // Earth setup
         const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
-        const earthMaterial = new THREE.MeshStandardMaterial({
-            map: earthTexture,
-            roughness: 0.5,
-            metalness: 0.2
-        });
+        const earthMaterial = new THREE.MeshStandardMaterial();
         const earth = new THREE.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
 
-        // Earth's atmosphere (light blue halo)
-        const atmosphereGeometry = new THREE.SphereGeometry(1.05, 64, 64); // Slightly bigger than Earth
-        const atmosphereMaterial = new THREE.MeshBasicMaterial({
-            color: 0x00aaff,
-            transparent: true,
-            opacity: 0.3
-        });
-        const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
-        scene.add(atmosphere);
+        // Earth Texture Loading
+        const earthTextureURL = "https://planet-textures.s3.amazonaws.com/earth_daymap.jpg"; // High-quality NASA texture
 
-        // Orbit settings for Earth
+        textureLoader.load(
+            earthTextureURL,
+            function(texture) {
+                earthMaterial.map = texture;
+                earthMaterial.needsUpdate = true;
+                console.log("Earth texture loaded successfully!");
+            },
+            undefined,
+            function(error) {
+                console.error("Error loading Earth texture:", error);
+            }
+        );
+
+        // Orbit settings
         const orbitRadius = 12;
         let angle = 0;
         const speedMultiplier = 525600;
@@ -74,42 +73,30 @@
         camera.position.set(0, 10, 25);
         camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-        // Time management: We'll stop at the year 2099
+        // Time control
         const startDate = new Date();
         const endDate = new Date(2099, 0, 1);
 
-        // Animation function
         function animate() {
             requestAnimationFrame(animate);
 
-            // Time-based calculation for Earth's orbit
             const now = new Date();
             let elapsed = now - startDate;
             elapsed *= speedMultiplier;
 
-            // Calculate Earth's angle in its orbit around the Sun
             angle = (elapsed / (365.25 * 24 * 60 * 60 * 1000)) * (2 * Math.PI);
 
-            // Update Earth's position based on orbit angle
             earth.position.x = orbitRadius * Math.cos(angle);
             earth.position.z = orbitRadius * Math.sin(angle);
-
-            // Rotate Earth on its axis
             earth.rotation.y += 0.01;
 
-            // Move atmosphere along with Earth
-            atmosphere.position.copy(earth.position);
-
-            // Restart animation when year 2099 is reached
             if (now >= endDate) {
                 startDate.setTime(now.getTime());
             }
 
-            // Render the scene
             renderer.render(scene, camera);
         }
 
-        // Start the animation
         animate();
     </script>
 </body>
