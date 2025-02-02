@@ -44,8 +44,8 @@
         const sun = new THREE.Mesh(sunGeometry, sunMaterial);
         scene.add(sun);
 
-        // Create Earth with high-quality texture
-        const earthTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/8/83/Earthmap1000x500.jpg');
+        // Create Earth with high-quality texture showing continents and oceans
+        const earthTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Earth_World_Map_%28Labeled%29.svg/2560px-Earth_World_Map_%28Labeled%29.svg.png');
         const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
         const earthMaterial = new THREE.MeshStandardMaterial({
             map: earthTexture,
